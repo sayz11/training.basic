@@ -14,21 +14,29 @@ class TodoController extends Controller
     {
         $this->middleware('auth');
     }
-    public function index()
-    {
-       //query list of todos from db
-       //$todos = Todo::all(); - show all todos from all user
-       $todos = Todo::paginate(3);
-       //yang bawah ni untuk user yang tengah login sahaja
-       //$user = auth()->user();
-       //$todos = $user->todos->paginate(2);
-
-      // dd($user); untuk tengok user yang tengah online
+    public function index(Request $request)
+    { 
+        if($request->keyword){
+            $user = auth()->user();
+            $todos = $user->todos()
+                            ->where('title','LIKE','%'.$request->keyword.'%')
+                            ->paginate(3);
+        }else{
+            $user = auth()->user();
+            $todos = $user->todos()->paginate(3);
+        }
+       
 
        // return to view - resources/views/todos/index.blade.php
        return view('todos.index', compact('todos'));
     }
-
+        //query list of todos from db
+        //$todos = Todo::all(); - show all todos from all user
+        //$todos = Todo::paginate(3);
+        //yang bawah ni untuk user yang tengah login sahaja
+       
+        
+      // dd($user); untuk tengok user yang tengah online
     public function create()
     {
         //show create form
